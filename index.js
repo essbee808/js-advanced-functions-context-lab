@@ -20,3 +20,79 @@ let allWagesFor = function () {
 
     return payable
 }
+
+let testEmployee = ["Gray", "Worm", "Security", 1];
+
+let createEmployeeRecord = function(testEmployee) {
+    return {
+        firstName: testEmployee[0],
+        familyName: testEmployee[1],
+        title: testEmployee[2],
+        payPerHour: testEmployee[3],
+        timeInEvents: [],
+        timeOutEvents: []
+    }
+}
+
+// Converts each nested Array into an employee record using
+// createEmployeeRecord and accumulates it to a new Array
+let createEmployeeRecords = function(employeeData) {
+    return employeeData.map(function(row){
+        return createEmployeeRecord(row)
+    })
+}
+
+// returns the record that was just updated
+let createTimeInEvent = function(dateStamp) {
+    let [date, hour] = dateStamp.split(' ')
+
+    this.timeInEvents.push({
+        type: "TimeIn",
+        hour: parseInt(hour,10),
+        date
+    })
+
+   return this
+}
+
+let createTimeOutEvent = function(dateStamp) {
+    let [date, hour] = dateStamp.split(' ')
+
+    this.timeOutEvents.push({
+        type: "TimeOut",
+        hour: parseInt(hour, 10),
+        date
+    })
+
+    return this
+}
+
+// calculates the hours workd when given an employee record and date
+let hoursWorkedOnDate = function(soughtDate) {
+    let inEvent = this.timeInEvents.find(function(e) {
+        return e.date === soughtDate
+    })
+
+    let outEvent = this.timeOutEvents.find(function(e) {
+        return e.date === soughtDate
+    })
+
+    return (outEvent.hour - inEvent.hour) / 100
+}
+
+let wagesEarnedOnDate = function(dateSought) {
+    let wage = hoursWorkedOnDate.call(this, dateSought) * this.payPerHour
+    return parseFloat(wage.toString())
+}
+
+let findEmployeeByFirstName = function(srcArray, firstName) {
+    return srcArray.find(function(s) {
+        return s.firstName === firstName
+    })
+}
+
+let calculatePayroll = function(arrayOfEmployeeRecords) {
+    return arrayOfEmployeeRecords.reduce(function(memo, rec) {
+        return memo + allWagesFor.call(rec)
+    }, 0)
+}
